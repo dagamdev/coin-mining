@@ -5,26 +5,29 @@ interface States {
   coins: number
   power: number
   batteries: number
-  rechargedBateries: number
+  chargedBatteries: number
+  batteryElapsedTime: number
 }
 
 interface Actions {
   addCoins: (coins: number) => void
   addPower: (power: number) => void
   miningCoins: () => void
-  addBateries: (bateries: number) => void
-  rechargeBateries: (bateries: number) => void
+  addBatteries: (batteries: number) => void
+  addChargedBatteries: (batteries: number) => void
   reset: () => void
+  batteryTimes: (time: number) => void
 }
 
-type CoinStore = States & Actions
+type MainStore = States & Actions
 
-export const useMainStore = create<CoinStore>()(persist((set) => {
+export const useMainStore = create<MainStore>()(persist((set) => {
   return {
     coins: 0,
+    power: 10,
     batteries: 0,
-    rechargedBateries: 0,
-    power: 1,
+    chargedBatteries: 0,
+    batteryElapsedTime: 0,
     addCoins(coins) {
       set(state => ({coins: state.coins + coins}))
     },
@@ -34,19 +37,35 @@ export const useMainStore = create<CoinStore>()(persist((set) => {
     miningCoins() {
       set(state => ({coins: state.coins + state.power / 100000000}))
     },
-    addBateries(bateries) {
-      set({batteries: bateries, rechargedBateries: bateries})
+    addBatteries(batteries) {
+      set(store => ({
+        batteries: store.batteries + batteries, 
+        chargedBatteries: store.chargedBatteries + batteries
+      }))
     },
-    rechargeBateries(bateries) {
-      set({rechargedBateries: bateries})
+    addChargedBatteries(batteries) {
+      set(store => ({chargedBatteries: store.chargedBatteries + batteries}))
     },
     reset() {
-      set({coins: 0,
-        power: 1,
+      set({
+        coins: 0,
+        power: 20,
         batteries: 0,
-        rechargedBateries: 0,
+        chargedBatteries: 0,
+        batteryElapsedTime: 0
       })
     },
+    batteryTimes(time) {
+      set(state => {
+        const definiteTime = time + state.batteryElapsedTime
+        let chargedBatteries = state.chargedBatteries - Math.floor(definiteTime / 60_000)
+        console.log({definiteTime, chargedBatteries, dischargedBatteries: Math.floor(definiteTime / 60_000), batteryElapsedTime: definiteTime % 60_000})
+        if (chargedBatteries < 0) chargedBatteries = 0
+        console.log({chargedBatteries})
+
+        return { batteryElapsedTime: definiteTime % 60_000, chargedBatteries }
+      })
+    }
   }
 }, {
   name: 'store'
