@@ -1,12 +1,15 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useCoinsStore } from './coins'
+import { TIMES } from '../lib/constants'
+import { getLocalData } from '../lib/utils'
 
 interface States {
   coins: number
   power: number
   batteries: number
   chargedBatteries: number
-  batteryElapsedTime: number
+  batteryUsageTime: number
 }
 
 interface Actions {
@@ -16,7 +19,7 @@ interface Actions {
   addBatteries: (batteries: number) => void
   addChargedBatteries: (batteries: number) => void
   reset: () => void
-  batteryTimes: (time: number) => void
+  calculateAbsenceChanges: () => void
 }
 
 type MainStore = States & Actions
@@ -27,7 +30,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
     power: 10,
     batteries: 0,
     chargedBatteries: 0,
-    batteryElapsedTime: 0,
+    batteryUsageTime: 0,
     addCoins(coins) {
       set(state => ({coins: state.coins + coins}))
     },
@@ -50,20 +53,41 @@ export const useMainStore = create<MainStore>()(persist((set) => {
       set({
         coins: 0,
         power: 20,
-        batteries: 0,
-        chargedBatteries: 0,
-        batteryElapsedTime: 0
+        batteries: 2,
+        chargedBatteries: 2,
+        batteryUsageTime: 0
       })
     },
-    batteryTimes(time) {
+    calculateAbsenceChanges() {
       set(state => {
-        const definiteTime = time + state.batteryElapsedTime
-        let chargedBatteries = state.chargedBatteries - Math.floor(definiteTime / 60_000)
-        console.log({definiteTime, chargedBatteries, dischargedBatteries: Math.floor(definiteTime / 60_000), batteryElapsedTime: definiteTime % 60_000})
-        if (chargedBatteries < 0) chargedBatteries = 0
-        console.log({chargedBatteries})
+        const lastTime: number = getLocalData('lastTime', true) ?? 0
+        const absenceTime = Date.now() - lastTime
+        const totalTime = absenceTime + state.batteryUsageTime
+        const totalBatteryTime = state.chargedBatteries * TIMES.HOUR - state.batteryUsageTime
+        let coins = 0
+        let chargedBatteries = state.chargedBatteries
+        let batteryUsageTime = state.batteryUsageTime
 
-        return { batteryElapsedTime: definiteTime % 60_000, chargedBatteries }
+        console.log({absenceTime, totalTime, totalBatteryTime}, totalBatteryTime - totalTime)
+
+        if (totalBatteryTime - totalTime < 0) {
+          coins = Math.floor(totalBatteryTime / 1000) * state.power
+          chargedBatteries = 0
+          batteryUsageTime = 0
+        } else {
+          coins = Math.floor(totalTime / 1000) * state.power
+          chargedBatteries -= Math.floor(totalTime / TIMES.HOUR)
+        }
+
+        console.log({batteryUsageTime})
+        if (batteryUsageTime && chargedBatteries === 0) batteryUsageTime = 0
+        else batteryUsageTime = totalTime % TIMES.HOUR
+
+        console.log({coins})
+        useCoinsStore.getState().addCoins(coins / 100000000)
+        console.log({ batteryUsageTime, chargedBatteries })
+
+        return { batteryUsageTime, chargedBatteries }
       })
     }
   }

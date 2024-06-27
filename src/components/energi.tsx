@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useMainStore } from "../store/store"
 import { formattedTime, saveLocalData } from "../lib/utils"
-import { TIMES_IN_MILLISECONDS } from "../lib/constants"
+import { TIMES } from "../lib/constants"
 import '../extensions'
 
 export default function Energi () {
@@ -28,8 +28,8 @@ export default function Energi () {
     }
   }, [])
 
-  const remainingBatteryTime = chargedBatteries === 0 ? 0 : TIMES_IN_MILLISECONDS.HOUR - batteryUsageTime
-  const basenteeMiningTime = chargedBatteries * TIMES_IN_MILLISECONDS.HOUR - batteryUsageTime
+  const remainingBatteryTime = chargedBatteries === 0 ? 0 : TIMES.HOUR - batteryUsageTime
+  const basenteeMiningTime = chargedBatteries * TIMES.HOUR - batteryUsageTime
   const dischargedBatteries = batteries - chargedBatteries
 
   return (
@@ -54,7 +54,7 @@ export default function Energi () {
           </li>
           <li>
             <p>Remaining battery energy:</p>
-            <strong>{(remainingBatteryTime * 100 / TIMES_IN_MILLISECONDS.HOUR).toFixed(2)}%</strong>
+            <strong>{(remainingBatteryTime * 100 / TIMES.HOUR).toFixed(2)}%</strong>
           </li>
           <li>
             <p>Remaining battery time:</p>
@@ -62,7 +62,7 @@ export default function Energi () {
           </li>
           <li>
             <p>Profits earned:</p>
-            <strong>🪙 {((dischargedBatteries * TIMES_IN_MILLISECONDS.HOUR + batteryUsageTime) / TIMES_IN_MILLISECONDS.SECOND * power / 100000000).toFixed(8)}</strong>
+            <strong>🪙 {((dischargedBatteries * TIMES.HOUR + batteryUsageTime) / TIMES.SECOND * power / 100000000).toFixed(8)}</strong>
           </li>
           <li>
             <p>Absentee earnings:</p>
