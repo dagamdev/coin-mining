@@ -17,4 +17,5 @@ main {
 
 .error {
   color: rgb(243, 52, 52);
+  text-wrap: pretty;
 }
