@@ -1,25 +1,16 @@
-import { type FormEvent, useState, useEffect } from "react"
-import { PRICES } from "../lib/constants"
+import { useEffect } from "react"
 import { useMainStore } from "../store/store"
-import { useCoinsStore } from "../store/coins"
-import { getLocalData, saveLocalData } from "../lib/utils"
+import { formattedTime, saveLocalData } from "../lib/utils"
+import { TIMES_IN_MILLISECONDS } from "../lib/constants"
+import '../extensions'
 
 export default function Energi () {
-  const [batteries, addBatteries, chargedBatteries, addChargedBatteries, batteryElapsedTime, batteryTimes] = useMainStore(store => 
-    [store.batteries, store.addBatteries, store.chargedBatteries, store.addChargedBatteries, store.batteryElapsedTime, store.batteryTimes]
+  const [batteries, chargedBatteries, batteryUsageTime, calculateAbsenceChanges, power] = useMainStore(store => 
+    [store.batteries, store.chargedBatteries, store.batteryUsageTime, store.calculateAbsenceChanges, store.power]
   )
-  const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-  const [buyMessage, setBuyMessage] = useState('')
-  const [rechargeMessage, setRechargeMessage] = useState('')
 
   useEffect(() => {
-    console.log({batteryElapsedTime})
-  }, [batteryElapsedTime])
-
-  useEffect(() => {
-    const lastTime: number = getLocalData('lastTime', true) ?? 0
-    
-    batteryTimes(Math.floor(Date.now() - lastTime))
+    calculateAbsenceChanges()
 
     const interval = setInterval(() => {
       saveLocalData('lastTime', Date.now())
@@ -37,96 +28,52 @@ export default function Energi () {
     }
   }, [])
 
-  const buyBateries = (ev: FormEvent<HTMLFormElement>) => {
-    ev.preventDefault()
-    const bateriesCount = +ev.currentTarget.bateries.value
-
-    if (bateriesCount < 1) return
-    const price = bateriesCount * PRICES.BATERIE
-
-    if (coins < price) {
-      setBuyMessage(`No tienes suficientes monedas para comprar 🔋${bateriesCount}.`)
-      return
-    }
-
-    addBatteries(bateriesCount)
-    addCoins(-price)
-  }
-
-  const rechargeBateries = (ev: FormEvent<HTMLFormElement>) => {
-    ev.preventDefault()
-
-    if (!(batteries - chargedBatteries)) {
-      setRechargeMessage('No tienes baterias para recargar')
-      return
-    }
-
-    const rechargeBateriesCount = +ev.currentTarget.rechargeBateries.value
-
-    if (rechargeBateriesCount < 1 || rechargeBateriesCount > batteries) return
-    const price = rechargeBateriesCount * PRICES.RECHARGE_BATERIE
-
-    if (coins < price) {
-      setRechargeMessage(`No tienes suficientes monedas para recargar 🔋${rechargeBateriesCount}.`)
-      return
-    }
-
-    addChargedBatteries(rechargeBateriesCount)
-    addCoins(-price)
-  }
+  const remainingBatteryTime = chargedBatteries === 0 ? 0 : TIMES_IN_MILLISECONDS.HOUR - batteryUsageTime
+  const basenteeMiningTime = chargedBatteries * TIMES_IN_MILLISECONDS.HOUR - batteryUsageTime
+  const dischargedBatteries = batteries - chargedBatteries
 
   return (
     <section>
       <div>
-        <h2>Energi</h2>
+        <h2>⚡ Energi</h2>
       </div>
       
       <div>
-        <div>
-          <p>Energy allows you to mine coins while you are not connected to the web page.</p>
-          <p>Each battery allows you to mine for one hour in your absence.</p>
-        </div>
-
-        <ul>
-          <li className="measurement">
+        <ul className="measures">
+          <li>
             <p>Batteries:</p>
-            <strong>🔋 {batteries}</strong>
+            <strong>🔋{batteries}</strong>
           </li>
-          <li className="measurement">
-            <p>Baterias cargadas:</p>
-            <strong>🔋 {chargedBatteries}/{batteries}</strong>
+          <li>
+            <p>Charged batteries:</p>
+            <strong>🔋{chargedBatteries}/{batteries}</strong>
           </li>
-          <li className="measurement">
+          <li>
+            <p>Absentee mining time:</p>
+            <strong>⏱️ {formattedTime(basenteeMiningTime)}</strong>
+          </li>
+          <li>
+            <p>Remaining battery energy:</p>
+            <strong>{(remainingBatteryTime * 100 / TIMES_IN_MILLISECONDS.HOUR).toFixed(2)}%</strong>
+          </li>
+          <li>
             <p>Remaining battery time:</p>
-            <strong>⏱️ {60 - Math.floor(batteryElapsedTime / 1000)}s</strong>
+            <strong>⏳ {formattedTime(remainingBatteryTime)}</strong>
+          </li>
+          <li>
+            <p>Profits earned:</p>
+            <strong>🪙 {((dischargedBatteries * TIMES_IN_MILLISECONDS.HOUR + batteryUsageTime) / TIMES_IN_MILLISECONDS.SECOND * power / 100000000).toFixed(8)}</strong>
+          </li>
+          <li>
+            <p>Absentee earnings:</p>
+            <strong>🪙 {(power * Math.floor(basenteeMiningTime / 1000) / 100000000).toFixed(8)}</strong>
           </li>
         </ul>
 
-        <form onSubmit={buyBateries}>
-          <h3>🧺 Buy batteries</h3>
-
-          <label>
-            <p className="text-sm">🔋1 = 🪙{PRICES.BATERIE}</p>
-            <div className="form_section">
-              <input onChange={() => setBuyMessage('')} name="bateries" type="number" min={1} />
-              <button>Buy</button>
-            </div>
-          </label>
-          {buyMessage.length !== 0 && <p className="error">{buyMessage}</p>}
-        </form>
-
-        <form onSubmit={rechargeBateries}>
-          <h3>⚡ Recharge batteries</h3>
-
-          <label>
-            <p className="text-sm">🔋1 = 🪙{PRICES.RECHARGE_BATERIE}</p>
-            <div className="form_section">
-              <input onChange={() => setRechargeMessage('')} name="rechargeBateries" type="number" min={1} max={batteries || 1} />
-              <button>Recharge</button>
-            </div>
-          </label>
-          {rechargeMessage.length !== 0 && <p className="error">{rechargeMessage}</p>}
-        </form>
+        <div className="text">
+          <p>Energy allows you to mine coins while you are not connected to the web page.</p>
+          <p>Each battery allows you to mine for one hour in your absence.</p>
+        </div>
       </div>
     </section>
   )

@@ -1,13 +1,10 @@
 import { FormEvent, useEffect, useState } from "react"
 import { useMainStore } from "../store/store"
-import { PRICES } from "../lib/constants"
 import { useCoinsStore } from "../store/coins"
 
 export default function Mining () {
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-  const [power, addPower] = useMainStore(store => [store.power, store.addPower])
-  const [inputPower, setInputPower] = useState('')
-  const [message, setMessage] = useState('')
+  const [power] = useMainStore(store => [store.power])
   const [updateSpeed, setUpdateSpeed] = useState(1)
 
   const miningCoins = () => {
@@ -23,20 +20,6 @@ export default function Mining () {
     }
   }, [updateSpeed, power])
 
-  const buyPower = (ev: FormEvent) => {
-    ev.preventDefault()
-    const amount = +(+inputPower * PRICES.POWER).toFixed(8)
-
-    if (coins - amount < 0) {
-      setMessage("You don't have enough coins to buy that mining power")
-      return
-    }
-
-    addCoins(-amount)
-    addPower(+inputPower)
-    setInputPower('')
-  }
-
   const changeSpeed = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault()
     const value = +ev.currentTarget.speed.value
@@ -47,40 +30,28 @@ export default function Mining () {
   return (
     <section>
       <div className="head">
-        <h2>Mining</h2>
+        <h2>🪨 Mining</h2>
       </div>
 
       <div>
-        <ul>
-          <li className="measurement">
+        <ul className="measures">
+          <li>
             <p>Coins:</p>
             <strong>🪙 {coins.toFixed(8)}</strong>
           </li>
-          <li className="measurement">
+          <li>
             <p>Mining power:</p>
             <strong>⛏️ {power}</strong>
           </li>
+          <li>
+            <p>Hourly earning:</p>
+            <strong>🪙 {(power * (60 * 60) / 100000000).toFixed(8)}</strong>
+          </li>
         </ul>
-
-        <form>
-          <label>
-            <h3>Buy power</h3>
-            <p className="text-sm">⛏️1 = 🪙{PRICES.POWER}</p>
-            <div className="form_section">
-              <input type="number" onChange={(ev) => {
-                setInputPower(ev.target.value)
-                setMessage('')
-              }} value={inputPower} />
-              <button onClick={buyPower}>Buy</button>
-            </div>
-            {inputPower && <p>⛏️{inputPower} = 🪙{(PRICES.POWER * (+inputPower)).toFixed(8)}</p>}
-            {message.length !== 0 && <p className="error">{message}</p>}
-          </label>
-        </form>
 
         <form onSubmit={changeSpeed}>
           <label>
-            <span>Update speed times per second: {updateSpeed}</span>
+            <span>Balance update time: {updateSpeed} per secon</span>
             <div className="form_section">
               <input name="speed" type="number" min={1} max={10} />
               <button>Update</button>
