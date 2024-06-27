@@ -4,7 +4,7 @@ export const PRICES = {
   BATTERY_RECHARGE: 0.00000100
 }
 
-export const TIMES_IN_MILLISECONDS = {
+export const TIMES = {
   SECOND: 1_000,
   MINUTE: 60_000,
   HOUR: 3_600_000,
