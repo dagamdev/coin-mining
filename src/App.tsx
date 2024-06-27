@@ -3,6 +3,7 @@ import { useMainStore } from './store/store'
 import Mining from './components/mining'
 import Energi from './components/energi'
 import { useCoinsStore } from './store/coins'
+import Store from './components/store'
 
 export default function App () {
   const [reset] = useMainStore(store => [store.reset])
@@ -12,10 +13,11 @@ export default function App () {
     <main>
       <button onClick={() => {
         reset()
-        setCoins(0.00004)
+        setCoins(0)
       }}>Reset</button>
       <Mining />
       <Energi />
+      <Store />
     </main>
   )
 }
