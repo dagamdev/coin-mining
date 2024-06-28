@@ -1,45 +1,15 @@
-import { FormEvent, useEffect, useState } from "react"
 import { PRICES } from "../lib/constants"
 import { useCoinsStore } from "../store/coins"
 import { useMainStore } from "../store/store"
 import BuyPower from "./buy-power"
 import BuyBatteries from "./buy-batteries"
+import NumberInputForm from "./number-input-form"
 
 export default function Store () {
   const [batteries, chargedBatteries, addChargedBatteries] = useMainStore(store =>
     [store.batteries, store.chargedBatteries, store.addChargedBatteries]
   )
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-  const [inputRechargeBatteries, setInputRechargeBatteries] = useState('')
-  const [rechargeMessage, setRechargeMessage] = useState('')
-
-  useEffect(() => {
-    if (rechargeMessage.length) setTimeout(() => {
-      setRechargeMessage('')
-    }, 20_000)
-  }, [rechargeMessage])
-
-  const rechargeBateries = (ev: FormEvent<HTMLFormElement>) => {
-    ev.preventDefault()
-
-    if (!(batteries - chargedBatteries)) {
-      setRechargeMessage('No tienes baterias para recargar')
-      return
-    }
-
-    const rechargeBateriesCount = +inputRechargeBatteries
-
-    if (rechargeBateriesCount < 1 || rechargeBateriesCount > batteries) return
-    const price = rechargeBateriesCount * PRICES.BATTERY_RECHARGE
-
-    if (coins < price) {
-      setRechargeMessage(`No tienes suficientes monedas para recargar 🔋${rechargeBateriesCount}.`)
-      return
-    }
-
-    addChargedBatteries(rechargeBateriesCount)
-    addCoins(-price)
-  }
 
   return (
     <section>
@@ -50,25 +20,34 @@ export default function Store () {
       <div>
         <BuyPower />
         <BuyBatteries />
+        <NumberInputForm title="Recharge batteries" buttonText="Recharge"
+          handleSubmit={(value, setMessage, clear) => {
+            if (!(batteries - chargedBatteries)) {
+              setMessage('All batteries are charged!')
+              return
+            }
 
-        <form onSubmit={rechargeBateries}>
-          <label>
-            <h3>Recharge batteries</h3>
+            if (value < 1 || value > batteries) return
+            const price = value * PRICES.BATTERY_RECHARGE
 
-            <div className="form_section">
-              <input onChange={(ev) => {
-                setInputRechargeBatteries(ev.currentTarget.value)
-                setRechargeMessage('')
-              }} value={inputRechargeBatteries} type="number" min={1} max={batteries || 1} />
-              <button disabled={inputRechargeBatteries.length === 0}>Recharge</button>
-            </div>
-          </label>
+            if (coins < price) {
+              setMessage(`You don't have enough coins to recharge ${value} batteries.`)
+              return
+            }
 
-          {rechargeMessage.length !== 0 && <p className="error">{rechargeMessage}</p>}
-          {inputRechargeBatteries.length !== 0 && <div className="form_stats">
-            <p className="text-sm">Payment Cost: 🪙<strong>{(PRICES.BATTERY_RECHARGE * (+inputRechargeBatteries)).toFixed(8)}</strong></p>
-          </div>}
-        </form>
+            addChargedBatteries(value)
+            addCoins(-price)
+            clear()
+          }}
+          stats={[
+            {
+              name: 'Payment Cost: 🪙',
+              getValue(value) {
+                return (PRICES.BATTERY_RECHARGE * value).toFixed(8)
+              },
+            }
+          ]}
+        />
       </div>
     </section>
   )
