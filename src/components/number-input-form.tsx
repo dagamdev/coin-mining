@@ -1,9 +1,9 @@
-import { type FormEvent, useState, useEffect } from "react"
+import { useState, useEffect } from "react"
 import type { SetState } from "../types"
 
 export default function NumberInputForm ({title, handleSubmit, stats, buttonText}: {
   title: string
-  handleSubmit(ev: FormEvent, value: number, setMessage: SetState<string>, clear: () => void): void
+  handleSubmit(value: number, setMessage: SetState<string>, clear: () => void): void
   stats?: {
     name: string
     getValue(value: number): number | string
@@ -20,7 +20,11 @@ export default function NumberInputForm ({title, handleSubmit, stats, buttonText
   }, [message])
 
   return (
-    <form onSubmit={(ev) => handleSubmit(ev, +inputValue, setMessage, () => setInputValue(''))}>
+    <form onSubmit={(ev) => {
+      ev.preventDefault()
+
+      handleSubmit(+inputValue, setMessage, () => setInputValue(''))
+    }}>
       <label>
         <h3>{title}</h3>
 
