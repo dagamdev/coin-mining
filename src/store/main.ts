@@ -7,6 +7,7 @@ import { getLocalData } from '../lib/utils'
 interface States {
   coins: number
   power: number
+  bonus: number
   batteries: number
   chargedBatteries: number
   batteryUsageTime: number
@@ -28,6 +29,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
   return {
     coins: 0,
     power: 10,
+    bonus:0,
     batteries: 0,
     chargedBatteries: 0,
     batteryUsageTime: 0,
@@ -53,6 +55,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
       set({
         coins: 0,
         power: 20,
+        bonus: 0,
         batteries: 2,
         chargedBatteries: 2,
         batteryUsageTime: 0
@@ -63,12 +66,12 @@ export const useMainStore = create<MainStore>()(persist((set) => {
         const lastTime: number = getLocalData('lastTime', true) ?? 0
         const absenceTime = Date.now() - lastTime
         const totalTime = absenceTime + state.batteryUsageTime
-        const totalBatteryTime = state.chargedBatteries * TIMES.HOUR - state.batteryUsageTime
+        const totalBatteryTime = state.chargedBatteries * TIMES.MINUTE - state.batteryUsageTime
         let coins = 0
         let chargedBatteries = state.chargedBatteries
         let batteryUsageTime = state.batteryUsageTime
 
-        console.log({absenceTime, totalTime, totalBatteryTime}, totalBatteryTime - totalTime)
+        console.log({absenceTime, totalTime, totalBatteryTime, batteryUsageTime}, totalBatteryTime - totalTime)
 
         if (totalBatteryTime - totalTime < 0) {
           coins = Math.floor(totalBatteryTime / 1000) * state.power
@@ -76,12 +79,12 @@ export const useMainStore = create<MainStore>()(persist((set) => {
           batteryUsageTime = 0
         } else {
           coins = Math.floor(totalTime / 1000) * state.power
-          chargedBatteries -= Math.floor(totalTime / TIMES.HOUR)
+          chargedBatteries -= Math.floor(totalTime / TIMES.MINUTE)
+          console.log({batteryUsageTime})
+          if (batteryUsageTime && chargedBatteries === 0) batteryUsageTime = 0
+          else batteryUsageTime = totalTime % TIMES.MINUTE
         }
 
-        console.log({batteryUsageTime})
-        if (batteryUsageTime && chargedBatteries === 0) batteryUsageTime = 0
-        else batteryUsageTime = totalTime % TIMES.HOUR
 
         console.log({coins})
         useCoinsStore.getState().addCoins(coins / 100000000)

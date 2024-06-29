@@ -1,6 +1,6 @@
 import { PRICES } from "../lib/constants"
 import { useCoinsStore } from "../store/coins"
-import { useMainStore } from "../store/store"
+import { useMainStore } from "../store/main"
 import NumberInputForm from "./number-input-form"
 
 export default function BuyPower () {
@@ -29,7 +29,7 @@ export default function BuyPower () {
     }} stats={[{
       name: 'Hourly earning: 🪙',
       getValue(value) {
-        return (value * 3600 / 100000000).toFixed(8)
+        return value * 3600 / 100000000
       }
     },
     {

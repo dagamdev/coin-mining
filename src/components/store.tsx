@@ -1,6 +1,6 @@
 import { PRICES } from "../lib/constants"
 import { useCoinsStore } from "../store/coins"
-import { useMainStore } from "../store/store"
+import { useMainStore } from "../store/main"
 import BuyPower from "./buy-power"
 import BuyBatteries from "./buy-batteries"
 import NumberInputForm from "./number-input-form"
@@ -43,7 +43,7 @@ export default function Store () {
             {
               name: 'Payment Cost: 🪙',
               getValue(value) {
-                return (PRICES.BATTERY_RECHARGE * value).toFixed(8)
+                return PRICES.BATTERY_RECHARGE * value
               },
             }
           ]}
