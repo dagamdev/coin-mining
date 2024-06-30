@@ -34,3 +34,13 @@ export function formattedTime (time: number) {
 
   return parts.length === 0 ? '0' : parts.join(':')
 }
+
+export function getCoinFormat (coins: number) {
+  if (coins === 0) return '0'
+
+  const strCoins = coins.toFixed(8)
+  const reversedCoins = strCoins.split('').reverse()
+  const numberIndex = reversedCoins.findIndex(n => n !== '0')
+
+  return strCoins.slice(0, strCoins.length - numberIndex)
+}
