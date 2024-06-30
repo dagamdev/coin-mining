@@ -35,6 +35,10 @@ export function formattedTime (time: number) {
   return parts.length === 0 ? '0' : parts.join(':')
 }
 
+export function convertToCoins (amount: number) {
+  return amount / 100000000
+}
+
 export function getCoinFormat (coins: number) {
   if (coins === 0) return '0'
 
