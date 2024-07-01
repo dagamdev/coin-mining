@@ -19,7 +19,6 @@ export default function BalanceIntervalSelector () {
     if (timeout.current) clearTimeout(timeout.current)
 
     timeout.current = setTimeout(() => {
-      console.log('Update mining interval:', inputVlue)
       updateMiningInterval(inputVlue)
     }, 1000)
 
