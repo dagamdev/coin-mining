@@ -5,6 +5,7 @@ import Energi from './components/energi'
 import { useCoinsStore } from './store/coins'
 import Store from './components/store'
 import Bonus from './components/bonus'
+import Settings from './components/settings'
 
 export default function App () {
   const [reset] = useMainStore(store => [store.reset])
@@ -20,6 +21,7 @@ export default function App () {
       <Bonus />
       <Energi />
       <Store />
+      <Settings />
     </main>
   )
 }
