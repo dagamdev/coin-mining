@@ -10,3 +10,5 @@ export const TIMES = {
   HOUR: 3_600_000,
   DAY: 24 * 3_600_000
 }
+
+export const INTERVAL_VALUES = [.2, .4, .6, .8, 1, 2, 3, 4, 5]
