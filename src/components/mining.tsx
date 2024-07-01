@@ -17,7 +17,7 @@ export default function Mining () {
     const nowTime = Date.now()
     const elapsedTime = nowTime - lastMininigTime.current
     lastMininigTime.current = nowTime
-    addCoins(convertToCoins(bonus * power / 100 * elapsedTime / 1000))
+    addCoins(convertToCoins(power + bonus * power / 100 * elapsedTime / 1000))
   }
 
   useEffect(() => {
