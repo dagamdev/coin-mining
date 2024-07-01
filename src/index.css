@@ -41,6 +41,7 @@ main {
 section {
   overflow: hidden;
   max-width: 400px;
+  min-width: 200px;
   border-radius: 16px;
   background-color: var(--bg);
 
