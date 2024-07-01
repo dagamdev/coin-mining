@@ -4,6 +4,7 @@ import { useMainStore } from "../store/main"
 import BuyPower from "./buy-power"
 import BuyBatteries from "./buy-batteries"
 import NumberInputForm from "./number-input-form"
+import BuyBonus from "./buy-bonus"
 
 export default function Store () {
   const [batteries, chargedBatteries, addChargedBatteries] = useMainStore(store =>
@@ -48,6 +49,7 @@ export default function Store () {
             }
           ]}
         />
+        <BuyBonus />
       </div>
     </section>
   )
