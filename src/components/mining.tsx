@@ -1,31 +1,31 @@
-import { FormEvent, useEffect, useState } from "react"
-import { useMainStore } from "../store/store"
+import { useEffect, useRef } from "react"
+import { useMainStore } from "../store/main"
 import { useCoinsStore } from "../store/coins"
+import DisplayCoins from "./display-coins"
+import { INTERVAL_VALUES } from "../lib/constants"
+import { convertToCoins } from "../lib/utils"
 
 export default function Mining () {
-  const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-  const [power] = useMainStore(store => [store.power])
-  const [updateSpeed, setUpdateSpeed] = useState(1)
+  const [addCoins] = useCoinsStore(store => [store.addCoins])
+  const [power, miningInterval] = useMainStore(store => [store.power, store.miningInterval])
+  const miningSpeed = INTERVAL_VALUES[miningInterval]
+  const lastMininigTime = useRef(Date.now())
 
   const miningCoins = () => {
-    addCoins(+(power / 100000000 / updateSpeed).toFixed(10))
+    // return
+    const nowTime = Date.now()
+    const elapsedTime = nowTime - lastMininigTime.current
+    lastMininigTime.current = nowTime
+    addCoins(convertToCoins(power * elapsedTime / 1000))
   }
 
   useEffect(() => {
-    miningCoins()
-    const interval = setInterval(miningCoins, 1000 / updateSpeed)
+    const interval = setInterval(miningCoins, miningSpeed * 1000)
 
     return () => {
       clearInterval(interval)
     }
-  }, [updateSpeed, power])
-
-  const changeSpeed = (ev: FormEvent<HTMLFormElement>) => {
-    ev.preventDefault()
-    const value = +ev.currentTarget.speed.value
-    if (value < 1 || value > 10) return
-    setUpdateSpeed(value)
-  }
+  }, [power, miningSpeed])
 
   return (
     <section>
@@ -37,7 +37,7 @@ export default function Mining () {
         <ul className="measures">
           <li>
             <p>Coins:</p>
-            <strong>🪙 {coins.toFixed(8)}</strong>
+            <DisplayCoins />
           </li>
           <li>
             <p>Mining power:</p>
@@ -45,19 +45,9 @@ export default function Mining () {
           </li>
           <li>
             <p>Hourly earning:</p>
-            <strong>🪙 {(power * (60 * 60) / 100000000).toFixed(8)}</strong>
+            <strong>🪙 {power * (60 * 60) / 100000000}</strong>
           </li>
         </ul>
-
-        <form onSubmit={changeSpeed}>
-          <label>
-            <span>Balance update time: {updateSpeed} per secon</span>
-            <div className="form_section">
-              <input name="speed" type="number" min={1} max={10} />
-              <button>Update</button>
-            </div>
-          </label>
-        </form>
       </div>
     </section>
   )
