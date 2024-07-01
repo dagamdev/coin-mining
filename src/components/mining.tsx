@@ -3,20 +3,21 @@ import { useMainStore } from "../store/main"
 import { useCoinsStore } from "../store/coins"
 import DisplayCoins from "./display-coins"
 import { INTERVAL_VALUES } from "../lib/constants"
-import { convertToCoins } from "../lib/utils"
+import { convertToCoins, getCoinFormat } from "../lib/utils"
 
 export default function Mining () {
   const [addCoins] = useCoinsStore(store => [store.addCoins])
-  const [power, miningInterval] = useMainStore(store => [store.power, store.miningInterval])
+  const [power, miningInterval, bonus] = useMainStore(store => [store.power, store.miningInterval, store.bonus])
   const miningSpeed = INTERVAL_VALUES[miningInterval]
   const lastMininigTime = useRef(Date.now())
+  const bonusPower = bonus * power / 100
 
   const miningCoins = () => {
     // return
     const nowTime = Date.now()
     const elapsedTime = nowTime - lastMininigTime.current
     lastMininigTime.current = nowTime
-    addCoins(convertToCoins(power * elapsedTime / 1000))
+    addCoins(convertToCoins(bonus * power / 100 * elapsedTime / 1000))
   }
 
   useEffect(() => {
@@ -45,7 +46,15 @@ export default function Mining () {
           </li>
           <li>
             <p>Hourly earning:</p>
-            <strong>🪙 {power * (60 * 60) / 100000000}</strong>
+            <strong>🪙 {getCoinFormat(convertToCoins(power * 3600))}</strong>
+          </li>
+          <li>
+            <p>Total power:</p>
+            <strong>⛏️{power + bonusPower}</strong>
+          </li>
+          <li>
+            <p>Total hourly earning:</p>
+            <strong>🪙{getCoinFormat(convertToCoins((power + bonusPower) * 3600))}</strong>
           </li>
         </ul>
       </div>

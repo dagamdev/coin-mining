@@ -116,6 +116,10 @@ button, .button {
   font-size: small;
 }
 
+.text-lg {
+  font-size: large;
+}
+
 .text {
   display: grid;
   row-gap: 8px;
