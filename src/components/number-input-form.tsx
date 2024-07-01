@@ -40,7 +40,7 @@ export default function NumberInputForm ({title, handleSubmit, stats, buttonText
 
       {message.length !== 0 && <p className="error">{message}</p>}
       {(stats && inputValue.length !== 0) && <div className="form_stats">
-        {stats.map(stat => <p className="text-sm">{stat.name}<strong>{stat.getValue(+inputValue)}</strong></p>)}
+        {stats.map(stat => <p key={stat.name} className="text-sm">{stat.name}<strong>{stat.getValue(+inputValue)}</strong></p>)}
       </div>}
     </form>
   )
