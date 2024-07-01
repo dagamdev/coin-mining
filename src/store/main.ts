@@ -99,5 +99,5 @@ export const useMainStore = create<MainStore>()(persist((set) => {
     },
   }
 }, {
-  name: 'store'
+  name: 'main'
 }))
