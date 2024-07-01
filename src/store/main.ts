@@ -15,14 +15,15 @@ interface States {
 }
 
 interface Actions {
-  addCoins: (coins: number) => void
-  addPower: (power: number) => void
-  miningCoins: () => void
-  addBatteries: (batteries: number) => void
-  addChargedBatteries: (batteries: number) => void
+  addCoins(coins: number): void
+  addPower(power: number): void
+  addBonus(bonus: number): void
+  miningCoins(): void
+  addBatteries(batteries: number): void
+  addChargedBatteries(batteries: number): void
   reset: () => void
-  calculateAbsenceChanges: () => void
-  updateMiningInterval: (newInterval: number) => void
+  calculateAbsenceChanges(): void
+  updateMiningInterval(newInterval: number): void
 }
 
 type MainStore = States & Actions
@@ -31,7 +32,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
   return {
     coins: 0,
     power: 10,
-    bonus:0,
+    bonus: 0,
     batteries: 0,
     miningInterval: 4,
     chargedBatteries: 0,
@@ -41,6 +42,9 @@ export const useMainStore = create<MainStore>()(persist((set) => {
     },
     addPower(power) {
       set(state => ({power: state.power + power}))
+    },
+    addBonus(bonus) {
+      set(state => ({bonus: state.bonus + bonus}))
     },
     miningCoins() {
       set(state => ({coins: state.coins + state.power / 100000000}))
