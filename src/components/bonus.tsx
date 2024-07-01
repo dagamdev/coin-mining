@@ -1,9 +1,8 @@
 import { useMainStore } from "../store/main"
-import { getCoinFormat } from "../lib/utils"
+import { convertToCoins, getCoinFormat } from "../lib/utils"
 
 export default function Bonus () {
   const [bonus, power] = useMainStore(store => [store.bonus, store.power])
-  console.log(power + bonus * power / 100)
 
   return (
     <section>
@@ -18,8 +17,12 @@ export default function Bonus () {
             <strong>✨{bonus}%</strong>
           </li>
           <li>
+            <p>Power:</p>
+            <strong>⛏️{bonus * power / 100}</strong>
+          </li>
+          <li>
             <p>Hourly earning:</p>
-            <strong>🪙{getCoinFormat(bonus * power / 100 * 3600)}</strong>
+            <strong>🪙{getCoinFormat(convertToCoins(bonus * power / 100 * 3600))}</strong>
           </li>
         </ul>
       </div>
