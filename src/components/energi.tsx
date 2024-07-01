@@ -1,8 +1,7 @@
 import { useEffect } from "react"
-import { useMainStore } from "../store/store"
-import { formattedTime, saveLocalData } from "../lib/utils"
+import { useMainStore } from "../store/main"
+import { formattedTime, getCoinFormat, saveLocalData } from "../lib/utils"
 import { TIMES } from "../lib/constants"
-import '../extensions'
 
 export default function Energi () {
   const [batteries, chargedBatteries, batteryUsageTime, calculateAbsenceChanges, power] = useMainStore(store => 
@@ -62,11 +61,11 @@ export default function Energi () {
           </li>
           <li>
             <p>Profits earned:</p>
-            <strong>🪙 {((dischargedBatteries * TIMES.HOUR + batteryUsageTime) / TIMES.SECOND * power / 100000000).toFixed(8)}</strong>
+            <strong>🪙 {getCoinFormat((dischargedBatteries * TIMES.HOUR + batteryUsageTime) / TIMES.SECOND * power / 100000000)}</strong>
           </li>
           <li>
             <p>Absentee earnings:</p>
-            <strong>🪙 {(power * Math.floor(basenteeMiningTime / 1000) / 100000000).toFixed(8)}</strong>
+            <strong>🪙 {getCoinFormat(power * Math.floor(basenteeMiningTime / 1000) / 100000000)}</strong>
           </li>
         </ul>
 
