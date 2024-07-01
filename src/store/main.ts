@@ -9,6 +9,7 @@ interface States {
   power: number
   bonus: number
   batteries: number
+  miningInterval: number
   chargedBatteries: number
   batteryUsageTime: number
 }
@@ -21,6 +22,7 @@ interface Actions {
   addChargedBatteries: (batteries: number) => void
   reset: () => void
   calculateAbsenceChanges: () => void
+  updateMiningInterval: (newInterval: number) => void
 }
 
 type MainStore = States & Actions
@@ -31,6 +33,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
     power: 10,
     bonus:0,
     batteries: 0,
+    miningInterval: 4,
     chargedBatteries: 0,
     batteryUsageTime: 0,
     addCoins(coins) {
@@ -57,6 +60,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
         power: 20,
         bonus: 0,
         batteries: 2,
+        miningInterval: 4,
         chargedBatteries: 2,
         batteryUsageTime: 0
       })
@@ -65,34 +69,30 @@ export const useMainStore = create<MainStore>()(persist((set) => {
       set(state => {
         const lastTime: number = getLocalData('lastTime', true) ?? 0
         const absenceTime = Date.now() - lastTime
-        const totalTime = absenceTime + state.batteryUsageTime
-        const totalBatteryTime = state.chargedBatteries * TIMES.MINUTE - state.batteryUsageTime
-        let coins = 0
         let chargedBatteries = state.chargedBatteries
         let batteryUsageTime = state.batteryUsageTime
+        const totalTime = absenceTime + batteryUsageTime
+        const remainingEnergyTime = chargedBatteries * TIMES.HOUR - totalTime
+        let coins = 0
 
-        console.log({absenceTime, totalTime, totalBatteryTime, batteryUsageTime}, totalBatteryTime - totalTime)
-
-        if (totalBatteryTime - totalTime < 0) {
-          coins = Math.floor(totalBatteryTime / 1000) * state.power
+        if (remainingEnergyTime < 0) {
+          coins = Math.floor((chargedBatteries * TIMES.HOUR - batteryUsageTime) / 1000) * state.power
           chargedBatteries = 0
           batteryUsageTime = 0
         } else {
-          coins = Math.floor(totalTime / 1000) * state.power
-          chargedBatteries -= Math.floor(totalTime / TIMES.MINUTE)
-          console.log({batteryUsageTime})
-          if (batteryUsageTime && chargedBatteries === 0) batteryUsageTime = 0
-          else batteryUsageTime = totalTime % TIMES.MINUTE
+          coins = Math.floor(absenceTime / 1000) * state.power
+          chargedBatteries -= Math.floor(totalTime / TIMES.HOUR)
+          batteryUsageTime = totalTime % TIMES.HOUR
         }
 
-
-        console.log({coins})
         useCoinsStore.getState().addCoins(coins / 100000000)
-        console.log({ batteryUsageTime, chargedBatteries })
 
         return { batteryUsageTime, chargedBatteries }
       })
-    }
+    },
+    updateMiningInterval(newInterval) {
+      set({miningInterval: newInterval})
+    },
   }
 }, {
   name: 'store'
