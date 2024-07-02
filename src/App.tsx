@@ -12,16 +12,18 @@ export default function App () {
   const setCoins = useCoinsStore(store => store.setCoins)
 
   return (
-    <main>
+    <>
       <button onClick={() => {
         reset()
         setCoins(0)
       }}>Reset</button>
-      <Mining />
-      <Bonus />
-      <Energi />
-      <Store />
-      <Settings />
-    </main>
+      <main>
+        <Mining />
+        <Bonus />
+        <Energi />
+        <Store />
+        <Settings />
+      </main>
+    </>
   )
 }
