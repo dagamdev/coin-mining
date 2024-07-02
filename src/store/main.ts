@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { useCoinsStore } from './coins'
 import { TIMES } from '../lib/constants'
-import { getLocalData } from '../lib/utils'
+import { convertToCoins, getLocalData } from '../lib/utils'
 
 interface States {
   coins: number
@@ -61,7 +61,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
     reset() {
       set({
         coins: 0,
-        power: 1,
+        power: 20,
         bonus: 0,
         batteries: 0,
         miningInterval: 4,
@@ -78,18 +78,19 @@ export const useMainStore = create<MainStore>()(persist((set) => {
         const totalTime = absenceTime + batteryUsageTime
         const remainingEnergyTime = chargedBatteries * TIMES.HOUR - totalTime
         let coins = 0
+        const totalPower = state.power + state.bonus * state.power / 100
 
         if (remainingEnergyTime < 0) {
-          coins = Math.floor((chargedBatteries * TIMES.HOUR - batteryUsageTime) / 1000) * state.power
+          coins = Math.floor((chargedBatteries * TIMES.HOUR - batteryUsageTime) / 1000) * totalPower
           chargedBatteries = 0
           batteryUsageTime = 0
         } else {
-          coins = Math.floor(absenceTime / 1000) * state.power
+          coins = Math.floor(absenceTime / 1000) * totalPower
           chargedBatteries -= Math.floor(totalTime / TIMES.HOUR)
           batteryUsageTime = totalTime % TIMES.HOUR
         }
 
-        useCoinsStore.getState().addCoins(coins / 100000000)
+        useCoinsStore.getState().addCoins(convertToCoins(coins))
 
         return { batteryUsageTime, chargedBatteries }
       })

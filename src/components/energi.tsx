@@ -4,8 +4,8 @@ import { formattedTime, getCoinFormat, saveLocalData } from "../lib/utils"
 import { TIMES } from "../lib/constants"
 
 export default function Energi () {
-  const [batteries, chargedBatteries, batteryUsageTime, calculateAbsenceChanges, power] = useMainStore(store => 
-    [store.batteries, store.chargedBatteries, store.batteryUsageTime, store.calculateAbsenceChanges, store.power]
+  const [batteries, chargedBatteries, batteryUsageTime, calculateAbsenceChanges, power, bonus] = useMainStore(store => 
+    [store.batteries, store.chargedBatteries, store.batteryUsageTime, store.calculateAbsenceChanges, store.power, store.bonus]
   )
 
   useEffect(() => {
@@ -30,6 +30,7 @@ export default function Energi () {
   const remainingBatteryTime = chargedBatteries === 0 ? 0 : TIMES.HOUR - batteryUsageTime
   const basenteeMiningTime = chargedBatteries * TIMES.HOUR - batteryUsageTime
   const dischargedBatteries = batteries - chargedBatteries
+  const totalPower = power + bonus * power / 100
 
   return (
     <section>
@@ -61,11 +62,11 @@ export default function Energi () {
           </li>
           <li>
             <p>Profits earned:</p>
-            <strong>🪙 {getCoinFormat((dischargedBatteries * TIMES.HOUR + batteryUsageTime) / TIMES.SECOND * power / 100000000)}</strong>
+            <strong>🪙 {getCoinFormat((dischargedBatteries * TIMES.HOUR + batteryUsageTime) / TIMES.SECOND * totalPower / 100000000)}</strong>
           </li>
           <li>
             <p>Absentee earnings:</p>
-            <strong>🪙 {getCoinFormat(power * Math.floor(basenteeMiningTime / 1000) / 100000000)}</strong>
+            <strong>🪙 {getCoinFormat(totalPower * Math.floor(basenteeMiningTime / 1000) / 100000000)}</strong>
           </li>
         </ul>
 
