@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import type { SetState } from "../types"
+import { getCoinFormat } from "../lib/utils"
 
 export default function NumberInputForm ({title, handleSubmit, stats, buttonText}: {
   title: string
@@ -7,6 +8,7 @@ export default function NumberInputForm ({title, handleSubmit, stats, buttonText
   stats?: {
     name: string
     getValue(value: number): number | string
+    notIsCoins?: boolean
   }[],
   buttonText: string
 }) {
@@ -40,7 +42,10 @@ export default function NumberInputForm ({title, handleSubmit, stats, buttonText
 
       {message.length !== 0 && <p className="error">{message}</p>}
       {(stats && inputValue.length !== 0) && <div className="form_stats">
-        {stats.map(stat => <p key={stat.name} className="text-sm">{stat.name}<strong>{stat.getValue(+inputValue)}</strong></p>)}
+        {stats.map(stat => {
+          const value = stat.getValue(+inputValue)
+          return <p key={stat.name} className="text-sm">{stat.name}<strong>{stat.notIsCoins ? value : getCoinFormat(+value)}</strong></p>
+        })}
       </div>}
     </form>
   )
