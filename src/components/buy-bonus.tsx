@@ -20,8 +20,6 @@ export default function BuyBonus () {
           return
         }
 
-        console.log({price, value})
-
         addCoins(-price)
         addBonus(value)
         clear()
