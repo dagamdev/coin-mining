@@ -61,7 +61,7 @@ export const useMainStore = create<MainStore>()(persist((set) => {
     reset() {
       set({
         coins: 0,
-        power: 20,
+        power: 1,
         bonus: 0,
         batteries: 0,
         miningInterval: 4,
