@@ -29,7 +29,6 @@ export default function Energi () {
 
   const remainingBatteryTime = chargedBatteries === 0 ? 0 : TIMES.HOUR - batteryUsageTime
   const basenteeMiningTime = chargedBatteries * TIMES.HOUR - batteryUsageTime
-  const dischargedBatteries = batteries - chargedBatteries
   const totalPower = power + bonus * power / 100
 
   return (
@@ -59,10 +58,6 @@ export default function Energi () {
           <li>
             <p>Remaining battery time:</p>
             <strong>⏳ {formattedTime(remainingBatteryTime)}</strong>
-          </li>
-          <li>
-            <p>Profits earned:</p>
-            <strong>🪙 {getCoinFormat((dischargedBatteries * TIMES.HOUR + batteryUsageTime) / TIMES.SECOND * totalPower / 100000000)}</strong>
           </li>
           <li>
             <p>Absentee earnings:</p>
