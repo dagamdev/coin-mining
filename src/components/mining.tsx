@@ -13,11 +13,12 @@ export default function Mining () {
   const bonusPower = bonus * power / 100
 
   const miningCoins = () => {
-    // return
     const nowTime = Date.now()
     const elapsedTime = nowTime - lastMininigTime.current
     lastMininigTime.current = nowTime
-    addCoins(convertToCoins(power + bonus * power / 100 * elapsedTime / 1000))
+    const totalPower = power + bonus * power / 100
+
+    addCoins(convertToCoins(totalPower * elapsedTime / 1000))
   }
 
   useEffect(() => {
