@@ -14,11 +14,11 @@ export default function Bonus () {
         <ul className="measures">
           <li>
             <p>Bonus:</p>
-            <strong>✨{bonus}%</strong>
+            <strong className="text-lg">✨{bonus.toLocaleString()}%</strong>
           </li>
           <li>
             <p>Power:</p>
-            <strong>⛏️{bonus * power / 100}</strong>
+            <strong>⛏️{(bonus * power / 100).toLocaleString()}</strong>
           </li>
           <li>
             <p>Hourly earning:</p>

@@ -42,7 +42,7 @@ export default function Mining () {
           </li>
           <li>
             <p>Mining power:</p>
-            <strong>⛏️ {power}</strong>
+            <strong>⛏️ {power.toLocaleString()}</strong>
           </li>
           <li>
             <p>Hourly earning:</p>
@@ -50,7 +50,7 @@ export default function Mining () {
           </li>
           <li>
             <p>Total power:</p>
-            <strong>⛏️{power + bonusPower}</strong>
+            <strong>⛏️{(power + bonusPower).toLocaleString()}</strong>
           </li>
           <li>
             <p>Total hourly earning:</p>
