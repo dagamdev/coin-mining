@@ -59,6 +59,10 @@ section {
     display: grid;
     row-gap: 8px;
   }
+
+  @media (width < 460px) {
+    width: 100%;
+  }
 }
 
 .measures {
