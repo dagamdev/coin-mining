@@ -5,10 +5,11 @@ import { useMainStore } from "../store/main"
 import NumberInputForm from "./number-input-form"
 
 export default function BuyPower () {
-  const [addPower] = useMainStore(store =>
-    [store.addPower]
+  const [power, addPower] = useMainStore(store =>
+    [store.power, store.addPower]
   )
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
+  const powerPrice = PRICES.POWER * power
 
   return (
     <NumberInputForm title="Buy power" buttonText="Buy" handleSubmit={(value, setMessage, clear) => {
@@ -17,7 +18,7 @@ export default function BuyPower () {
         return
       }
       
-      const amount = +(value * PRICES.POWER).toFixed(8)
+      const amount = +(value * powerPrice).toFixed(8)
 
       if (coins - amount < 0) {
         setMessage("You don't have enough coins to buy that mining power")
@@ -36,8 +37,11 @@ export default function BuyPower () {
     {
       name: 'Payment Cost: 🪙',
       getValue(value) {
-        return PRICES.POWER * value
-      }
+        return powerPrice * value
+      },
+      valueIsNotAffordable(value) {
+        return powerPrice * value > coins
+      },
     }]}/>
   )
 }

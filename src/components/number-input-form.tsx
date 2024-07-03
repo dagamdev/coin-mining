@@ -9,6 +9,7 @@ export default function NumberInputForm ({title, handleSubmit, stats, buttonText
     name: string
     getValue(value: number): number | string
     notIsCoins?: boolean
+    valueIsNotAffordable?: (value: number) => boolean
   }[],
   buttonText: string
 }) {
@@ -44,7 +45,8 @@ export default function NumberInputForm ({title, handleSubmit, stats, buttonText
       {(stats && inputValue.length !== 0) && <div className="form_stats">
         {stats.map(stat => {
           const value = stat.getValue(+inputValue)
-          return <p key={stat.name} className="text-sm">{stat.name}<strong>{stat.notIsCoins ? value : getCoinFormat(+value)}</strong></p>
+          
+          return <p key={stat.name} className="text-sm">{stat.name}<strong className={stat.valueIsNotAffordable?.(+inputValue) ? 'error' : ''}>{stat.notIsCoins ? value : getCoinFormat(+value)}</strong></p>
         })}
       </div>}
     </form>
