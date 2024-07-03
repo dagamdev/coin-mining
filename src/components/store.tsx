@@ -23,6 +23,11 @@ export default function Store () {
         <BuyBatteries />
         <NumberInputForm title="Recharge batteries" buttonText="Recharge"
           handleSubmit={(value, setMessage, clear) => {
+            if (!batteries) {
+              setMessage("You don't have batteries to charge")
+              return
+            }
+            
             if (!(batteries - chargedBatteries)) {
               setMessage('All batteries are charged!')
               return
@@ -46,6 +51,9 @@ export default function Store () {
               getValue(value) {
                 return PRICES.BATTERY_RECHARGE * value
               },
+              valueIsNotAffordable(value) {
+                return PRICES.BATTERY_RECHARGE * value > coins
+              }
             }
           ]}
         />
