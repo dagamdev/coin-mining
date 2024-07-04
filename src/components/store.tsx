@@ -1,17 +1,9 @@
-import { PRICES } from "../lib/constants"
-import { useCoinsStore } from "../store/coins"
-import { useMainStore } from "../store/main"
 import BuyPower from "./buy-power"
 import BuyBatteries from "./buy-batteries"
-import NumberInputForm from "./number-input-form"
 import BuyBonus from "./buy-bonus"
+import ChargeBatteries from "./charge-batteries"
 
 export default function Store () {
-  const [batteries, chargedBatteries, addChargedBatteries] = useMainStore(store =>
-    [store.batteries, store.chargedBatteries, store.addChargedBatteries]
-  )
-  const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-
   return (
     <section>
       <div>
@@ -20,44 +12,9 @@ export default function Store () {
 
       <div>
         <BuyPower />
-        <BuyBatteries />
-        <NumberInputForm title="Recharge batteries" buttonText="Recharge"
-          handleSubmit={(value, setMessage, clear) => {
-            if (!batteries) {
-              setMessage("You don't have batteries to charge")
-              return
-            }
-            
-            if (!(batteries - chargedBatteries)) {
-              setMessage('All batteries are charged!')
-              return
-            }
-
-            if (value < 1 || value > batteries) return
-            const price = value * PRICES.BATTERY_RECHARGE
-
-            if (coins < price) {
-              setMessage(`You don't have enough coins to recharge ${value} batteries.`)
-              return
-            }
-
-            addChargedBatteries(value)
-            addCoins(-price)
-            clear()
-          }}
-          stats={[
-            {
-              name: 'Payment Cost: 🪙',
-              getValue(value) {
-                return PRICES.BATTERY_RECHARGE * value
-              },
-              valueIsNotAffordable(value) {
-                return PRICES.BATTERY_RECHARGE * value > coins
-              }
-            }
-          ]}
-        />
         <BuyBonus />
+        <BuyBatteries />
+        <ChargeBatteries />
       </div>
     </section>
   )
