@@ -23,7 +23,7 @@ export default function ChargeBatteries () {
         }
 
         if (value > batteries - chargedBatteries) {
-          setMessage(`You can't charge the batteries that are discharged.`)
+          setMessage(`You can't charge more batteries than the ones you have discharged.`)
           return
         }
 
