@@ -6,11 +6,12 @@ import NumberInputForm from "./number-input-form"
 export default function ChargeBatteries () {
   const [batteries, chargedBatteries, addChargedBatteries] = useMainStore(store => [store.batteries, store.chargedBatteries, store.addChargedBatteries])
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
+  const getPrice = (amount: number) => amount * PRICES.BATTERY_RECHARGE
   
   return (
     <NumberInputForm title="Recharge batteries" buttonText="Recharge"
-      handleSubmit={(value, setMessage, clear) => {
-        if (value < 1) return
+      handleSubmit={(amount, setMessage, clear) => {
+        if (amount < 1) return
         
         if (!batteries) {
           setMessage("You don't have batteries to charge")
@@ -22,30 +23,30 @@ export default function ChargeBatteries () {
           return
         }
 
-        if (value > batteries - chargedBatteries) {
+        if (amount > batteries - chargedBatteries) {
           setMessage(`You can't charge more batteries than the ones you have discharged.`)
           return
         }
 
-        const price = value * PRICES.BATTERY_RECHARGE
+        const price = getPrice(amount)
 
         if (coins < price) {
-          setMessage(`You don't have enough coins to recharge ${value} batteries.`)
+          setMessage(`You don't have enough coins to recharge ${amount} batteries.`)
           return
         }
 
-        addChargedBatteries(value)
+        addChargedBatteries(amount)
         addCoins(-price)
         clear()
       }}
       stats={[
         {
           name: 'Payment Cost: 🪙',
-          getValue(value) {
-            return PRICES.BATTERY_RECHARGE * value
+          getValue(amount) {
+            return getPrice(amount)
           },
-          valueIsNotAffordable(value) {
-            return PRICES.BATTERY_RECHARGE * value > coins
+          valueIsNotAffordable(amount) {
+            return getPrice(amount) > coins
           }
         }
       ]}

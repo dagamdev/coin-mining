@@ -9,36 +9,36 @@ export default function BuyBatteries () {
     [store.batteries, store.addBatteries]
   )
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-  const getPrice = (amount: number) => batteries * PRICES.BATTERY * amount
+  const getPrice = (amount: number) => (batteries || 1) * PRICES.BATTERY * amount
 
   return (
-    <NumberInputForm title="Buy batteries" buttonText="Buy" handleSubmit={(value, setMessage, clear) => {  
-      if (value < 1) return
-      const price = getPrice(value)
+    <NumberInputForm title="Buy batteries" buttonText="Buy" handleSubmit={(amount, setMessage, clear) => {  
+      if (amount < 1) return
+      const price = getPrice(amount)
   
       if (coins < price) {
-        setMessage(`You don't have enough coins to buy ${value} batteries.`)
+        setMessage(`You don't have enough coins to buy ${amount} batteries.`)
         return
       }
   
-      addBatteries(value)
+      addBatteries(amount)
       addCoins(-price)
       clear()
     }} stats={[
       {
         name: 'Absentee mining time: ⌚',
-        getValue(value) {
-          return formattedTime(value * TIMES.HOUR)
+        getValue(amount) {
+          return formattedTime(amount * TIMES.HOUR)
         },
         notIsCoins: true
       },
       {
         name: 'Payment Cost: 🪙',
-        getValue(value) {
-          return getPrice(value)
+        getValue(amount) {
+          return getPrice(amount)
         },
-        valueIsNotAffordable(value) {
-          return getPrice(value) > coins
+        valueIsNotAffordable(amount) {
+          return getPrice(amount) > coins
         }
       }
     ]}/>

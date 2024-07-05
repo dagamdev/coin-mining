@@ -7,39 +7,39 @@ import NumberInputForm from "./number-input-form";
 export default function BuyBonus () {
   const [power, bonus, addBonus] = useMainStore(store => [store.power, store.bonus, store.addBonus])
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-  const getPrice = (amount: number) => bonus * PRICES.BATTERY_RECHARGE * amount
+  const getPrice = (amount: number) => (bonus || 1) * PRICES.BATTERY_RECHARGE * amount
 
   return (
     <NumberInputForm title="Buy bonus" buttonText="Buy"
-      handleSubmit={(value, setMessage, clear) => {
-        if (value < 1) return
+      handleSubmit={(amount, setMessage, clear) => {
+        if (amount < 1) return
 
-        const price = getPrice(value)
+        const price = getPrice(amount)
 
         if (price > coins) {
-          setMessage(`You don't have enough coins to buy ${value} bonuses`)
+          setMessage(`You don't have enough coins to buy ${amount} bonuses`)
           return
         }
 
         addCoins(-price)
-        addBonus(value)
+        addBonus(amount)
         clear()
       }}
       stats={[
         {
           name: 'Hourly earning: 🪙',
-          getValue(value) {
+          getValue(amount) {
             const coins = power * 3600
-            return convertToCoins(coins + value * coins / 100)
+            return convertToCoins(coins + amount * coins / 100)
           }
         },
         {
           name: 'Payment Cost: 🪙',
-          getValue(value) {
-            return getPrice(value)
+          getValue(amount) {
+            return getPrice(amount)
           },
-          valueIsNotAffordable(value) {
-            return getPrice(value) > coins
+          valueIsNotAffordable(amount) {
+            return getPrice(amount) > coins
           }
         }
       ]}

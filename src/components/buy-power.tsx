@@ -9,16 +9,16 @@ export default function BuyPower () {
     [store.power, store.addPower]
   )
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-  const powerPrice = PRICES.POWER * power
+  const getPrice = (amount: number) => PRICES.POWER * power * amount
 
   return (
-    <NumberInputForm title="Buy power" buttonText="Buy" handleSubmit={(value, setMessage, clear) => {
-      if (value <= 0) {
+    <NumberInputForm title="Buy power" buttonText="Buy" handleSubmit={(amount, setMessage, clear) => {
+      if (amount <= 0) {
         setMessage('Enter an amount of purchasing power')
         return
       }
       
-      const price = value * powerPrice
+      const price = getPrice(amount)
 
       if (coins - price < 0) {
         setMessage("You don't have enough coins to buy that mining power")
@@ -26,21 +26,21 @@ export default function BuyPower () {
       }
 
       addCoins(-price)
-      addPower(value)
+      addPower(amount)
       clear()
     }} stats={[{
       name: 'Hourly earning: 🪙',
-      getValue(value) {
-        return convertToCoins(value * 3600)
+      getValue(amount) {
+        return convertToCoins(amount * 3600)
       }
     },
     {
       name: 'Payment Cost: 🪙',
-      getValue(value) {
-        return powerPrice * value
+      getValue(amount) {
+        return getPrice(amount)
       },
-      valueIsNotAffordable(value) {
-        return powerPrice * value > coins
+      valueIsNotAffordable(amount) {
+        return getPrice(amount) > coins
       },
     }]}/>
   )

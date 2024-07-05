@@ -4,12 +4,12 @@ import { getCoinFormat } from "../lib/utils"
 
 export default function NumberInputForm ({title, handleSubmit, stats, buttonText}: {
   title: string
-  handleSubmit(value: number, setMessage: SetState<string>, clear: () => void): void
+  handleSubmit(amount: number, setMessage: SetState<string>, clear: () => void): void
   stats?: {
     name: string
-    getValue(value: number): number | string
+    getValue(amount: number): number | string
     notIsCoins?: boolean
-    valueIsNotAffordable?: (value: number) => boolean
+    valueIsNotAffordable?: (amount: number) => boolean
   }[],
   buttonText: string
 }) {
