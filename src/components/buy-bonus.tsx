@@ -7,13 +7,14 @@ import NumberInputForm from "./number-input-form";
 export default function BuyBonus () {
   const [power, bonus, addBonus] = useMainStore(store => [store.power, store.bonus, store.addBonus])
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
+  const getPrice = (amount: number) => bonus * PRICES.BATTERY_RECHARGE * amount
 
   return (
     <NumberInputForm title="Buy bonus" buttonText="Buy"
       handleSubmit={(value, setMessage, clear) => {
         if (value < 1) return
 
-        const price = (value + bonus) * PRICES.BATTERY_RECHARGE
+        const price = getPrice(value)
 
         if (price > coins) {
           setMessage(`You don't have enough coins to buy ${value} bonuses`)
@@ -35,10 +36,10 @@ export default function BuyBonus () {
         {
           name: 'Payment Cost: 🪙',
           getValue(value) {
-            return (value + bonus) * PRICES.BATTERY_RECHARGE
+            return getPrice(value)
           },
           valueIsNotAffordable(value) {
-            return (value + bonus) * PRICES.BATTERY_RECHARGE > coins
+            return getPrice(value) > coins
           }
         }
       ]}
