@@ -9,8 +9,7 @@ export default function BuyBatteries () {
     [store.batteries, store.addBatteries]
   )
   const [coins, addCoins] = useCoinsStore(store => [store.coins, store.addCoins])
-
-  const getPrice = (amount: number) => (amount + batteries) * PRICES.BATTERY
+  const getPrice = (amount: number) => batteries * PRICES.BATTERY * amount
 
   return (
     <NumberInputForm title="Buy batteries" buttonText="Buy" handleSubmit={(value, setMessage, clear) => {  
