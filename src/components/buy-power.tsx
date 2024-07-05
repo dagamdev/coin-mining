@@ -18,14 +18,14 @@ export default function BuyPower () {
         return
       }
       
-      const amount = +(value * powerPrice).toFixed(8)
+      const price = value * powerPrice
 
-      if (coins - amount < 0) {
+      if (coins - price < 0) {
         setMessage("You don't have enough coins to buy that mining power")
         return
       }
 
-      addCoins(-amount)
+      addCoins(-price)
       addPower(value)
       clear()
     }} stats={[{
