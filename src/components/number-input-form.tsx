@@ -35,7 +35,7 @@ export default function NumberInputForm ({title, handleSubmit, stats, buttonText
           <input type="number" onChange={(ev) => {
             setInputValue(ev.target.value)
             setMessage('')
-          }} value={inputValue} min={0} />
+          }} value={inputValue} min={1} />
 
           <button className="form-button" disabled={inputValue.length === 0}>{buttonText}</button>
         </div>

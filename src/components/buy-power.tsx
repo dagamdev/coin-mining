@@ -13,7 +13,7 @@ export default function BuyPower () {
 
   return (
     <NumberInputForm title="Buy power" buttonText="Buy" handleSubmit={(amount, setMessage, clear) => {
-      if (amount <= 0) {
+      if (amount < 1) {
         setMessage('Enter an amount of purchasing power')
         return
       }
