@@ -27,7 +27,7 @@ export default function BalanceIntervalSelector () {
 
   return (
     <label>
-      <h4>Update balance every {INTERVAL_VALUES[value]} seconds</h4>
+      <h3>Update balance every {INTERVAL_VALUES[value]} seconds</h3>
       
       <div>
         <input type="range" onChange={handleChange} value={value} max={INTERVAL_VALUES.length - 1} />
