@@ -42,9 +42,12 @@ export function convertToCoins (amount: number) {
 export function getCoinFormat (coins: number) {
   if (coins === 0) return '0'
 
-  const strCoins = coins.toFixed(8)
+  let strCoins = coins.toFixed(8)
   const reversedCoins = strCoins.split('').reverse()
   const numberIndex = reversedCoins.findIndex(n => n !== '0')
+  strCoins = strCoins.slice(0, strCoins.length - numberIndex)
 
-  return strCoins.slice(0, strCoins.length - numberIndex)
+  if (strCoins.endsWith('.')) return strCoins.slice(0, strCoins.length - 1)
+
+  return strCoins
 }
